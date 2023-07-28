@@ -1,0 +1,137 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Color Picker</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .color-setter {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .color-input {
+            width: 150px;
+            height: 50px;
+        }
+        input {
+            text-align: center;
+        }
+        .btn {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h4>Color Picker</h4>
+        <div class="color-picker">
+            <input type="color" class="color-input">
+            <span class="hexcolor-code">#d4814b</span>
+        <div>
+        <div class="color-setter">
+            <label>Red</label>
+            <input type="number" class="red" value=34>
+            <label>Green</label>
+            <input type="number" class="green" value=204>
+            <label>Blue</label>
+            <input type="number" class="blue" value=96>
+            <input type="submit" class="btn" value="Convert">
+            <input type="submit" class="generate-color" value="Generate values">
+        </div>
+    </div>
+    
+    <script src="{% static 'jquery-3.6.1.js' %}"></script>
+    <script>
+        let color_input = document.querySelector('.color-input');
+        console.log(color_input.value);
+        color_input.value = "#d4814b";
+        console.log(color_input.value);
+
+        let color_picker = document.querySelector(".color-input");
+        let hexcolor_code = document.querySelector(".hexcolor-code");
+        let red = document.querySelector(".red");
+        let green = document.querySelector(".green");
+        let blue = document.querySelector(".blue");
+        let convert = document.querySelector(".btn");
+        let generate_color = document.querySelector(".generate-color");
+        
+        color_picker.value = "#37d6e1";
+        
+        generate_color.addEventListener("click", e => {
+            generateColor();
+        });
+        
+        function generateNumber() {
+            let num = Math.round(Math.random() * 255);
+            return num;
+        }
+        
+        generateColor();
+        function generateColor() {
+            red.value = generateNumber();
+            green.value = generateNumber();
+            blue.value = generateNumber();
+        }
+        
+        convert.addEventListener("click", e => {
+            e.preventDefault();
+            let csrf_token = "{{ csrf_token }}";
+            
+            let data = {
+                "red": red.value,
+                "green": green.value,
+                "blue": blue.value
+            }
+            
+            fetch("/color_picker_api/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrf_token
+                },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    let color = data.color;
+                    color_picker.value = color;
+                    hexcolor_code.textContent = color;
+                })
+                .catch(err => console.log(err));
+        })
+        
+        color_picker.addEventListener("change", e => {
+            hexcolor_code.textContent = e.target.value;
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,158 @@
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .collaborator table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .collaborator table th,
+        .collaborator table td {
+            border: 1px solid #ddd;
+        }
+        .confirm-identity {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-div">
+            <h4>Colaborator {{ title }}</h4>
+        </div>
+        <div class="body-div">
+            {% if only_form %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Register">
+                    <a class="view-collaborators" href="#">View Collaborators</a>
+                </form>
+                <div>
+                    <span class="error"></span>
+                </div>
+                <div class="confirm-identity">
+                    <input class="username" type="text" placeholder="Enter your username" required>
+                    <button class="confirm-user">Validate</button>
+                </div>
+            {% endif %}
+            {% if user_exists %}
+                <h4 style="color:red">Collaborators with these details already exists!</h4>
+            {% endif %}
+            <div class="collaborator">
+                {% if is_created %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Division</th>
+                                <th>Job Title</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ collaborator.username }}</td>
+                                <td>{{ collaborator.first_name }}</td>
+                                <td>{{ collaborator.last_name }}</td>
+                                <td>{{ collaborator.email }}</td>
+                                <td>{{ collaborator.department }}</td>
+                                <td>{{ collaborator.division }}</td>
+                                <td>{{ collaborator.job_title }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a href="{% url 'portal:register' %}">Register New</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let firstName = document.querySelector('#id_first_name');
+        let lastName = document.querySelector('#id_last_name');
+        let division = document.querySelector('#id_division');
+        let jobTitle = document.querySelector('#id_job_title');
+        let viewCollaborators = document.querySelector('.view-collaborators');
+        let confirm_identity = document.querySelector('.confirm-identity');
+        let username = document.querySelector('.username');
+        let confirm_btn = document.querySelector('.confirm-user');
+        let error = document.querySelector('.error');
+        
+        firstName.focus();
+        
+        viewCollaborators.addEventListener("click", e => {
+            let check_identity = prompt('Enter your username?', '');
+            fetch(`/confirm_identity/${check_identity}/`, {
+                method: 'GET'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    let username_exists = data.username_exists;
+                    if (username_exists) {
+                        window.location = '/collaborators/';
+                    } else {
+                        window.location = '/register/';
+                    }
+                })
+                .catch(err => console.log(err));
+        });
+        
+        confirm_btn.addEventListener("click", e => {
+            if (username.value === "") {
+                error.textContent = "Enter your username!"
+                error.style.color = "red";
+                error.style.fontSize = "14px";
+                error.style.fontStyle = "italic";
+            } else {
+                fetch(`/confirm_identity/${username.value}/`, {
+                    method: 'GET',
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        let username_exists = data.username_exists;
+                        if (username_exists) {
+                             error.textContent = "";
+                             window.location = "/collaborators/"
+                        } else {
+                            error.textContent = "You don't have permission to view this!";
+                            error.style.color = "red";
+                            error.style.fontSize = "14px";
+                            error.style.fontStyle = "italic";
+                        }
+                    })
+                    .catch(err => console.log(err));
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,255 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Fraction Calculator</title>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 100px;
+        }
+        .fraction-div,
+        .calculation-info {
+            width: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .calculation-info {
+            width: 170px;
+            margin-top: 3px;
+        }
+        .row {
+            display: flex;
+            flex-direction: column;
+            justify-content: space;
+            align-items: center;
+        }
+        input[type="number"] {
+            margin-bottom: 6px;
+            outline: none;
+            height: 35px;
+            width: 45px;
+            font-size: 17px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #ccc;
+            background-color: #F8F3F3;
+        }
+        .result-span {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+            outline: none;
+            height: 35px;
+            width: 45px;
+            font-size: 17px;
+            border-radius: 4px;
+            text-align: center;
+            border: none;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            background-color: #F8F3F3;
+        }
+        input[type="submit"] {
+            border: none;
+            height: 35px;
+            width: 80px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 2px solid lightblue;
+            margin-bottom: 10px;
+        }
+        .row-1, .row-2, .row-3, .row-4 {
+            margin-right: 10px;
+        }
+        .nume1 {
+           
+        }
+        .line-separator {
+            width: 41px;
+            border: 2px solid #ccc;
+            background: #ccc;
+            margin-bottom: 5px;
+        }
+        .symbol {
+            font-size: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+            outline: none;
+            height: 35px;
+            width: 45px;
+            font-size: 22px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .operator {
+            text-align: center;
+        }
+        .error {
+            color: red;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-div">
+            <span class="error"></span>
+        </div>
+        <div class="fraction-div">
+            <div class="row row-1">
+                <input type="number" class="nume1" name="" value="">
+                <span class="line-separator"></span>
+                <input type="number" class="deno1" name="" value="">
+            </div>
+            <div class="row row-2">
+                <select class="operator symbol">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                    <option value="x">x</option>
+                    <option value=":">:</option>
+                </select>
+            </div>
+            <div class="row row-3">
+                <input type="number" class="nume2" name="" value="">
+                <span class="line-separator"></span>
+                <input type="number" class="deno2" name="" value="">
+            </div>
+            <div class="row row-4">
+                <span class="equal symbol">=</span>
+            </div>
+            <div class="row row-5">
+                <span class="nume-result result-span"></span>
+                <span class="line-separator"></span>
+                <span class="deno-result result-span"></span>
+            </div>
+        </div>
+        
+        <div class="calculation-info">
+            <input class="calculate" type="submit" value="Calculate">
+            <input class="generate" type="submit" value="Generate">
+            <!--<div class="result-detail"></div>-->
+        </div>
+    </div>
+    
+    <script src="{% static 'jquery-3.6.1.js' %}"></script>
+    <script>
+        let calcBtn = document.querySelector('.calculate');
+        let nume1 = document.querySelector('.nume1');
+        let nume2 = document.querySelector('.nume2');
+        let deno1 = document.querySelector('.deno1');
+        let deno2 = document.querySelector('.deno2');
+        let operator = document.querySelector('.operator');
+        let numeResult = document.querySelector('.nume-result');
+        let denoResult = document.querySelector('.deno-result');
+        let error = document.querySelector('.error');
+        // let resultDetail = document.querySelector('.result-detail');
+
+        nume1.focus();
+
+        function generateRandon(number) {
+            return Math.floor(Math.random() * number);
+        }
+
+        let SYMBOLS = ['+', '-', ':', 'x'];
+        regenerateValues();
+        function regenerateValues() {
+            // operator.value = SYMBOLS[generateRandon(SYMBOLS.length)];
+
+            let number = 10
+            nume1.value = generateRandon(number);
+            nume2.value = generateRandon(number);
+            deno1.value = generateRandon(number);
+            deno2.value = generateRandon(number);
+        }
+
+        checkEmptyField(nume1);
+        checkEmptyField(nume2);
+        checkEmptyField(deno1);
+        checkEmptyField(deno2);
+        function checkEmptyField(tag) {
+            tag.addEventListener('input', e => {
+                let value = e.target.value;
+                if (value === '') {
+                    error.textContent = 'Enter a number';
+                } else {
+                    error.textContent = '';
+                }
+            })
+        }
+
+        function sendData() {
+            fetch(`/calculate_fractions/${nume1.value}/${deno1.value}/${nume2.value}/${deno2.value}
+                /${operator.value}`)
+                .then(res => res.json())
+                .then(data => {
+                    let [nume, deno] = data.result.split('/');
+                    // if (operator.value === '+') {
+                    //     setTimeout(() => {
+                    //         resultDetail.innerHTML += `
+                    //                 <div class="row">
+                    //                     <input type="number" value="${nume}" class="nume2">
+                    //                 </div>
+                    //         `;
+                    //     }, 50);
+                    //     setTimeout(() => {
+                    //         resultDetail.innerHTML += `
+                    //                 <span class="line-separator"></span>
+                    //                 <input type="number" value="${deno}" class="nume2">
+                    //         `;
+                    //     }, 60);
+                    // }
+                    numeResult.textContent = nume;
+                    denoResult.textContent = deno;
+                    // regenerateValues();
+                })
+                .catch(err => console.log(err));
+        }
+
+        calcBtn.addEventListener('click', e => {
+            e.preventDefault();
+
+            sendData();
+            setTimeout(() => {
+                calcBtn.style.outline = "2px solid lightblue";
+            }, 10);
+            setTimeout(() => {
+                calcBtn.style.outline = "1px solid lightblue";
+            }, 60);
+            
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,143 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Verdana;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .text-session,
+        .calculation {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .calculation {
+            margin-top: 20px;
+        }
+        .message-field {
+            margin-bottom: 10px;
+        }
+        .show-message,
+        .show-calculation {
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-session">
+            <input type="text" class="message-field">
+            <button class="btn">Show Message</button>
+            <span class="show-message"></span>
+        </div>
+        
+        <div class="calculation">
+            <label>Enter first num</label>
+            <input type="number" step="0.01" class="first-num-field" />
+            <label>Enter second num</label>
+            <input type="number" step="0.01" class="second-num-field" />
+            <label>Select operation</label>
+            <select class="operation">
+                <option value="sum">Sum</option>
+                <option value="sub">Subtraction</option>
+                <option value="div">Division</option>
+                <option value="multi">Multiplication</option>
+            </select>
+            </br>
+            <button class="btn-calc">Calculate Sum</button>
+            <span class="show-calculation"></span>
+            <span class="result-extension"></span>
+        </div>
+    </div>
+    
+    <script>
+        "use strict";
+        let message_field = document.querySelector(".message-field");
+        let show_btn = document.querySelector(".btn");
+        let show_message = document.querySelector(".show-message");
+        
+        let first_num = document.querySelector(".first-num-field");
+        let second_num = document.querySelector(".second-num-field");
+        let operation = document.querySelector(".operation");
+        let btn_calc = document.querySelector(".btn-calc");
+        let show_calc = document.querySelector(".show-calculation");
+        let result_extension = document.querySelector(".result-extension");
+        
+        const OPERATIONS = {
+            "sum": (x, y) => x + y,
+            "sub": (x, y) => x - y,
+            "div": (x, y) => x / y,
+            "multi": (x, y) => x * y
+        }
+        
+        const GET_OPERATOR = {
+            "sum": "+", "sub": "-", "div": ":", "multi": "*"
+        }
+        
+        btn_calc.addEventListener("click", e => {
+            if (first_num.value == "" || second_num.value == "") {
+                show_calc.style.display = "block";
+                show_calc.style.color = "red";
+                show_calc.textContent = "Enter numbers";
+            } else {
+                show_calc.style.display = "block";
+                show_calc.style.color = "black";
+                let result = OPERATIONS[operation.value](parseFloat(first_num.value),
+                                                         parseFloat(second_num.value));
+                // show_calc.textContent = result;
+                show_calc.textContent = `${parseFloat(first_num.value)} ${GET_OPERATOR[operation.value]} ${parseFloat(second_num.value)} = ${result}`;
+                
+                fetch(`/calculate/${parseFloat(first_num.value)}/${parseFloat(second_num.value)}/${operation.value}/`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(err => console.log(err));
+            }
+        });
+        
+        show_btn.addEventListener("click", e => {
+            // e.preventDefault();
+            
+            if (message_field.value === "") {
+                show_message.textContent = "Enter message!"
+                show_message.style.fontStyle = "italic";
+                show_message.style.color = "red";
+            } else {
+                show_message.textContent = message_field.value;
+                show_message.style.fontStyle = "bold";
+                show_message.style.color = "black";
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,105 @@
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .collaborator table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .collaborator table th,
+        .collaborator table td {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-div">
+            <h4>Colaborators</h4>
+        </div>
+        <div class="body-div">
+            <div class="collaborator">
+                <select id="filter">
+                    {% for option in fields %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <br/>
+                <br/>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Division</th>
+                            <th>Job Title</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for collaborator in collaborators %}
+                            <tr>
+                                <td>{{ collaborator.username }}</td>
+                                <td>{{ collaborator.first_name }}</td>
+                                <td>{{ collaborator.last_name }}</td>
+                                <td>{{ collaborator.email }}</td>
+                                <td>{{ collaborator.department }}</td>
+                                <td>{{ collaborator.division }}</td>
+                                <td>{{ collaborator.job_title }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'portal:register' %}">Register New</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        /*
+        let check_identity = prompt('Enter your username?', '');
+        fetch(`/confirm_identity/${check_identity}/`, {
+            method: 'GET'
+        })
+            .then(res => res.json())
+            .then(data => {
+                let username_exists = data.username_exists;
+                if (username_exists) {
+                    //
+                } else {
+                    window.location = '/register/';
+                }
+            })
+            .catch(err => console.log(err));
+        */
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

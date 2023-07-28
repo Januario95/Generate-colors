@@ -1,0 +1,150 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .distance {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .first-city, 
+        .second-city,
+        .result-distance {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .calc-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h4>Calculate Distance Between Two Points in Kilimeters</h4>
+        <div class="distance">
+            <div class="first-city">
+                <div class="row">
+                    <label>Latitude of the city-1</label>
+                    <input type="number" step=0.01 class="city-1-lat" value=10.8>
+                </div>
+                <div class="row">
+                    <label>Longetitude of the city-1</label>
+                    <input type="number" step=0.01 class="city-1-lon" value=59.9>
+                </div>
+            </div>
+            <div class="second-city">
+                <div class="row">
+                    <label>Latitude of the city-2</label>
+                    <input type="number" step=0.01 class="city-2-lat" value=-123.1>
+                </div>
+                <div class="row">
+                    <label>Longetitude of the city-2</label>
+                    <input type="number" step=0.01 class="city-2-lon" value=49.3>
+                </div>
+            </div>
+            <div class="button-section">
+                <input type="submit" class="calc-btn" value="Calculate">
+                <input type="submit" class="generate-nums" value="Generate Coords">
+            </div>
+            <div class="result-distance">
+                <span  class="distance-result"></span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'jquery-3.6.1.js' %}"></script>
+    <script>
+        let city_1_lat = document.querySelector(".city-1-lat");
+        let city_1_lon = document.querySelector(".city-1-lon");
+        let city_2_lat = document.querySelector(".city-2-lat");
+        let city_2_lon = document.querySelector(".city-2-lon");
+        let calc_btn = document.querySelector(".calc-btn");
+        let distance_result = document.querySelector(".distance-result");
+        let generateCoords = document.querySelector(".generate-nums");
+        
+        generateCoords.addEventListener("click", e => {
+            generateCoordenates();
+        })
+        
+        function generateNumber() {
+            let num = Math.round(Math.random() * 360) * Math.random();
+            return String(num).slice(0, 7);
+        }
+        
+        function generateCoordenates() {
+            city_1_lat.value = generateNumber();
+            city_1_lon.value = generateNumber();
+            city_2_lat.value = generateNumber();
+            city_2_lon.value = generateNumber();
+        }
+        
+        generateCoordenates();
+        
+        calc_btn.addEventListener("click", e => {
+            let csrf_token = "{{ csrf_token }}";
+        
+            e.preventDefault();
+            
+            let data = {
+                "lat1": parseFloat(city_1_lat.value),
+                "lon1": parseFloat(city_1_lon.value),
+                "lat2": parseFloat(city_2_lat.value),
+                "lon2": parseFloat(city_2_lon.value)
+            }
+            
+            fetch("/distance_between_two_places_api/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrf_token
+                },
+                body: JSON.stringify(data)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    
+                    let result = data["distance"];
+                    result = String(result).slice(0, 10);
+                    distance_result.textContent = `Distance between (${city_1_lat.value}ºN, ${city_1_lon.value}ºE) and (${city_2_lat.value}ºN ${city_2_lon.value}ºE) = ${result} Km`;   
+                })
+                .catch(err => console.log(err));
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

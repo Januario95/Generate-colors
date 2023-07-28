@@ -1,0 +1,94 @@
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .collaborator table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .collaborator table th,
+        .collaborator table td {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-div">
+            <h4>Colaborator Details</h4>
+        </div>
+        <div class="body-div">
+            <div class="collaborator">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Division</th>
+                            <th>Job Title</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ collaborator.username }}</td>
+                            <td>{{ collaborator.first_name }}</td>
+                            <td>{{ collaborator.last_name }}</td>
+                            <td>{{ collaborator.email }}</td>
+                            <td>{{ collaborator.department }}</td>
+                            <td>{{ collaborator.division }}</td>
+                            <td>{{ collaborator.job_title }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let first_name = document.querySelector('#id_first_name');
+        let last_name = document.querySelector('#id_last_name');
+        let department = document.querySelector('#id_department');
+        let division = document.querySelector('#id_division');
+        let job_title = document.querySelector('#id_job_title');
+        
+        first_name.value = 'Januario';
+        last_name.value = 'Cipriano';
+        department.value = 'Engineering';
+        division.value = 'Data and Analytics';
+        job_title.value = 'Robotics Automation Engineer';
+        
+        first_name.addEventListener('input', e => {
+            let val = e.target.value;
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

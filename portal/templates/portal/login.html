@@ -1,0 +1,67 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container form {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+        input {
+            height: 33px;
+            outline: none;
+        }
+        .submit-btn {
+            margin-top: 10px;
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">  
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input class="submit-btn" type="submit" value="Login">
+        </form>
+    </div>
+    
+    <script src="{% static 'jquery-3.6.1.js' %}"></script>
+    <script>
+       
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

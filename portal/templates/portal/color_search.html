@@ -1,0 +1,150 @@
+{% load static %}
+<html DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Color Picker</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        td, th {
+            border: 1px solid #ccc;
+            width: 120px;
+            text-align: center;
+        }
+        .color-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h4>Available Colors</h4>
+        
+        <div class="filter-colors">
+            <button class="previous">Previous</button>
+            <button class="next">Next</button>
+        </div>
+        </br>
+        
+        <div class="color-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Red</th>
+                        <th>Green</th>
+                        <th>Blue</th>
+                        <th>HEX Color</th>
+                        <th>RGB Color</th>
+                        <th>Color Display</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for color in colors %}
+                        <tr>
+                            <td>{{ color.pk }}</td>
+                            <td>{{ color.red }} </td>
+                            <td>{{ color.green }} </td>
+                            <td>{{ color.blue }} </td>
+                            <td>{{ color.hexcolor }} </td>
+                            <td>{{ color.rgbcolor }} </td>
+                            <td class="color-display">
+                                <!-- <input type="color" value="{{ color.hexcolor }}"> -->
+                                <b style="background-color: {{ color.hexcolor }}; border-radius:50%; width:25px; height:25px;"></b>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="{% static 'jquery-3.6.1.js' %}"></script>
+    <script>
+        let previous = document.querySelector(".previous");
+        let next = document.querySelector(".next");
+        
+        let search_limit = parseInt(window.location.href.split('_search/')[1].split('/')[0]);
+        
+        previous.addEventListener("click", e => {
+            e.preventDefault();
+            
+            search_limit -= 10;
+            window.location.href = `http://localhost:8000/color_search/${search_limit}/`
+        });
+        
+        
+        checkNext();
+        function checkNext() {
+            fetch("/total_colors/")
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.total_colors);
+                    if (search_limit > parseInt(data.total_colors)) {
+                        next.disabled = true;
+                        window.location.href = "http://localhost:8000/color_search/491/";
+                    } else {
+                        next.disabled = false;
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+        
+        next.addEventListener("click", e => {
+            e.preventDefault();
+            
+            search_limit += 10;
+            
+            fetch("/total_colors/")
+                .then(res => res.json())
+                .then(data => {
+                    if (parseInt(data.total_colors) <= search_limit + 10) {
+                        window.location.href = "http://localhost:8000/color_search/490/";
+                        next.disabled = true;
+                    } else {
+                        window.location.href = `http://localhost:8000/color_search/${search_limit}/`
+                        next.disabled = false;
+                    }
+                })
+                .catch(err => console.log(err));
+        })
+        
+        if (parseInt(search_limit) < 11) {
+            previous.disabled = true;
+        } else {
+            previous.disabled = false;
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
